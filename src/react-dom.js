@@ -25,10 +25,64 @@ function createDOM(vdom) {
     }
     // react 元素
     let {type, props} = vdom;
-    let dom = document.createElement(type)
+    let dom;
+    if (typeof type === 'function') { //函数组件
+        return mountFunctionComponent(vdom)
+    }else{ //原生组件
+        dom = document.createElement(type)
+    }
+
+    // 使用虚拟dom的属性更新刚创建出来的真实dom的属性
+    updateProps(dom,props)
+    // 在这处理props.children属性
+    if (typeof props.children ==='string' || typeof props.children ==='number') {
+        dom.textContent = props.children
+    } else if(typeof props.children === 'object' && props.children.type) {
+        render(props.children, dom) 
+
+        // 如果儿子是一个数的话，说明儿子不止一个
+    }else if (Array.isArray(props.children)) {
+        reconcileChildren(props.children, dom)
+    }else{
+        document.textContent = props.children? props.children.toString():''
+    }
+
+    // 把真实dom 作为一个dom属性放在虚拟dom上 为以后的更新做准备
+    // vdom.dom = dom
     return dom
 }
 
+// 把一个类型为自定义函数组件的虚拟Dom转换为真实Dom并返回
+function mountFunctionComponent(vdom) {
+    let {type:FunctionComponent, props} = vdom
+    let renderVdom = FunctionComponent(props)
+    return createDOM(renderVdom)
+}
+
+
+function reconcileChildren(childrenVdom, parentDom) {
+    for (let i = 0; i < childrenVdom.length; i++) {
+        let childVdom = childrenVdom[i];
+        render(childVdom,parentDom)
+    }
+}
+
+
+
+function updateProps(dom,newProps) {
+    for (const key in newProps) {
+        if (key === 'children') continue; //单独处理 不在此处处理 
+        if (key === 'style') {
+            let styleObj = newProps.style
+            for (const attr in styleObj) {
+               dom.style[attr] = styleObj[attr]
+            }
+
+        }else{
+            dom[key] = newProps[key]
+        }
+    }
+}
 
 const ReactDom = {
     render
