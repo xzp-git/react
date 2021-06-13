@@ -1,4 +1,4 @@
-
+import Component from "./Component";
 /* 
 
 type 元素的类型
@@ -27,7 +27,8 @@ function createElement(type, config, children) {
 
 
 const React = {
-    createElement
+    createElement,
+    Component
 }
 
 export default React

@@ -16,7 +16,7 @@ function render(vdom, container) {
     const dom = createDOM(vdom)
 
     container.appendChild(dom)
-}
+}  
 
 function createDOM(vdom) {
     //TODO  处理vdom是数字或者字符串的情况
@@ -27,7 +27,11 @@ function createDOM(vdom) {
     let {type, props} = vdom;
     let dom;
     if (typeof type === 'function') { //函数组件
-        return mountFunctionComponent(vdom)
+        if (type.isReactComponent) {
+            return mountClassComponent(vdom)
+        }else{
+            return mountFunctionComponent(vdom)
+        }
     }else{ //原生组件
         dom = document.createElement(type)
     }
@@ -82,6 +86,15 @@ function updateProps(dom,newProps) {
             dom[key] = newProps[key]
         }
     }
+}
+
+/* 
+1.创建类组件的实例
+2.调用类组件实例的render方法获得返回的虚拟Dom(React元素)
+3.把返回的虚拟DOM转成真实DOM进行挂载
+*/
+function mountClassComponent(vdom) {
+    
 }
 
 const ReactDom = {
