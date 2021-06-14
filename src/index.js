@@ -1,5 +1,5 @@
-import React from "react";
-import ReactDom from "react-dom";
+import React from "./react";
+import ReactDom from "./react-dom";
 
  /* 
 类组件和类组件的更新
@@ -29,6 +29,13 @@ class Counter extends React.Component{
     this.state = {number:0,name:'xzp'}
   }
   handleClick = () => {
+
+    // this.setState({number:this.state.number+1},() => {
+    //   console.log('callback1',this.state.number)
+    // })
+    // this.setState({number:this.state.number+1},() => {
+    //   console.log('callback2',this.state.number)
+    // })
     // 肯定是批量更新，而且这个回调函数石凳全部更新完毕后才执行的
     this.setState((lastState) => ({number:lastState.number+1}),() => {
       console.log('callback1',this.state.number)
@@ -66,3 +73,16 @@ ReactDom.render(
 <Counter />
 , 
  document.getElementById('root')) 
+
+ /*  期望结果
+ 0
+ 0
+ callback1 2
+ callback2 2
+ 2
+ callback3 3
+ 3
+ callback4 4
+ 4
+ 
+ */

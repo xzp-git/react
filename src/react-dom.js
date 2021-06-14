@@ -1,4 +1,4 @@
-
+import { addEvent } from "./event";
 /* 
 1.把vdom 变成真实的Dom
 2.把虚拟dom的属性更新到Dom上
@@ -83,7 +83,8 @@ function updateProps(dom,newProps) {
             }
 
         }else if(key.startsWith('on')){
-            dom[key.toLocaleLowerCase()] = newProps[key]
+            // dom[key.toLocaleLowerCase()] = newProps[key]
+            addEvent(dom,key.toLocaleLowerCase(),newProps[key])
         }else{
             dom[key] = newProps[key]
         }
