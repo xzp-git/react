@@ -18,7 +18,7 @@ function render(vdom, container) {
     container.appendChild(dom)
 }  
 
-function createDOM(vdom) {
+export function createDOM(vdom) {
     //TODO  处理vdom是数字或者字符串的情况
     if (typeof vdom === 'string' || typeof vdom === 'number') {
         return document.createTextNode(vdom)
@@ -82,6 +82,8 @@ function updateProps(dom,newProps) {
                dom.style[attr] = styleObj[attr]
             }
 
+        }else if(key.startsWith('on')){
+            dom[key.toLocaleLowerCase()] = newProps[key]
         }else{
             dom[key] = newProps[key]
         }
@@ -94,7 +96,17 @@ function updateProps(dom,newProps) {
 3.把返回的虚拟DOM转成真实DOM进行挂载
 */
 function mountClassComponent(vdom) {
-    
+    // 解构类的定义和类的属性对象
+    let {type, props} = vdom
+    // 创建类的实例
+    let classInstance = new type(props)
+    // 调用实例的render方法返回要渲染的虚拟dom对象
+    let renderVdom = classInstance.render()
+    // 根据虚拟dom对象创建真实dom对象
+    let dom = createDOM(renderVdom)
+    // 为以后类组件的更新，把真实dom挂载到了类的实例上
+    classInstance.dom = dom
+    return dom
 }
 
 const ReactDom = {
