@@ -16,6 +16,7 @@ function render(vdom, container) {
     const dom = createDOM(vdom)
 
     container.appendChild(dom)
+    dom.componentDidMount && dom.componentDidMount()
 }  
 
 export function createDOM(vdom) {
@@ -26,7 +27,7 @@ export function createDOM(vdom) {
     // react 元素
     
     let {type, props} = vdom;
-
+ 
     let dom;
 
     if (typeof type === 'function') { //函数组件
@@ -106,10 +107,16 @@ function mountClassComponent(vdom) {
     let {type, props} = vdom
     // 创建类的实例
     let classInstance = new type(props)
+    if (classInstance.componentWillMount) {
+        classInstance.componentWillMount()
+    }
     // 调用实例的render方法返回要渲染的虚拟dom对象
     let renderVdom = classInstance.render()
     // 根据虚拟dom对象创建真实dom对象
     let dom = createDOM(renderVdom)
+    if (classInstance.componentDidMount) {
+       dom.componentDidMount = classInstance.componentDidMount.bind(classInstance)
+    }
     // 为以后类组件的更新，把真实dom挂载到了类的实例上
     classInstance.dom = dom
     return dom
