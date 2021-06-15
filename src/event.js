@@ -8,11 +8,13 @@ import { updateQueue } from "./Component";
 export function addEvent(dom, eventType, listener) {
     let store = dom.store || (dom.store = {})
     store[eventType] = listener //store.onclick = handleClick
-    if (document[eventType]) {
+    if (!document[eventType]) {
         // 事件委托，不管给那个元素绑定事件 最后都统一 委托在document上去了
         document[eventType] = dispatchEvent //document.onclick = dispatchEvent
     }
 }
+
+
 let syntheticEvent = {
    stopping:false,
    stop(){
@@ -20,6 +22,8 @@ let syntheticEvent = {
        console.log('阻止冒泡');
    } 
 }
+
+
 function dispatchEvent(event) {
     let {target, type} = event //事件源 = button 那个DOM元素  类型 type = click
     let eventType = `on${type}`
