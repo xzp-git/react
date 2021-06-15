@@ -55,18 +55,22 @@ class Updater{
 class Component{
 
     static isReactComponent = true
+
     constructor(props){
         this.props = props
         this.state = {}
         this.updater = new Updater(this)
     }
+       
     //部分状态
     setState(partialState, cb){
         this.updater.addState(partialState, cb)
     }
+
     render(){
         throw new Error('此方法为抽象方法')
     }
+        
     forceUpdate(){
         let newVdom = this.render()
         updateClassComponent(this,newVdom)

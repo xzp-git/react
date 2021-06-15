@@ -24,8 +24,11 @@ export function createDOM(vdom) {
         return document.createTextNode(vdom)
     }
     // react 元素
+    
     let {type, props} = vdom;
+
     let dom;
+
     if (typeof type === 'function') { //函数组件
         if (type.isReactComponent) {
             return mountClassComponent(vdom)
@@ -43,8 +46,8 @@ export function createDOM(vdom) {
         dom.textContent = props.children
     } else if(typeof props.children === 'object' && props.children.type) {
         render(props.children, dom) 
-
-        // 如果儿子是一个数的话，说明儿子不止一个
+ 
+        // 如果儿子是一个数组的话，说明儿子不止一个
     }else if (Array.isArray(props.children)) {
         reconcileChildren(props.children, dom)
     }else{
@@ -52,7 +55,9 @@ export function createDOM(vdom) {
     }
 
     // 把真实dom 作为一个dom属性放在虚拟dom上 为以后的更新做准备
+    
     // vdom.dom = dom
+    
     return dom
 }
 
