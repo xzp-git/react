@@ -37,7 +37,7 @@ class Counter extends React.Component{
   render(){
     console.log('Counter  render 渲染完成');
     return(
-      <div>
+      <div id="counter">
         <h1>{this.state.name}</h1>
         {this.state.number === 4? null:<ChildCounter count={this.state.number}/>}
         <p>{this.state.number}</p>
@@ -73,7 +73,7 @@ class ChildCounter extends React.Component{
   }
   render(){
     console.log('ChildCounter 3.render');
-    return (<div>{this.props.count}</div>)
+    return (<div id="child-counter">{this.props.count}</div>)
   }
 }
 
