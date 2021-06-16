@@ -33,10 +33,7 @@ function dispatchEvent(event) {
         let {store} = target
         let listener = store && store[eventType]
         listener && listener.call(target,syntheticEvent);
-        
-
         if (syntheticEvent.stopping) break
-
         target = target.parentNode
     }
     

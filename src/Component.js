@@ -44,6 +44,8 @@ class Updater{
             cbs.length = 0 */
 
             shouldUpdate(classInstance, this.getState())
+            cbs.forEach(cb => cb && cb());
+            cbs.length = 0 
         }
     }
     getState(){

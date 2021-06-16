@@ -19,7 +19,9 @@ class Counter extends React.Component{
   handleClick = () => {
 
    // 肯定是批量更新，而且这个回调函数石凳全部更新完毕后才执行的
-    this.setState({number:this.state.number+1})
+    this.setState({number:this.state.number+1},() => {
+      console.log("状态的回调函数")
+    })
 
   }
   shouldComponentUpdate(nextProps,nextState){
@@ -81,6 +83,7 @@ ReactDom.render(
  document.getElementById('root')) 
 
  /* 
+ 
  Counter 1.constructor 初始化属性和状态
  Counter 2.componentWillMount 组件将要挂载
  Counter  render 渲染完成
