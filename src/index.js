@@ -1,5 +1,5 @@
-import React from "react";
-import ReactDom from "react-dom";
+import React from "./react";
+import ReactDom from "./react-dom";
 
 class Counter extends React.Component{
   static defaultProps = {
@@ -37,7 +37,7 @@ class Counter extends React.Component{
   render(){
     console.log('Counter  render 渲染完成');
     return(
-      <div id="counter">
+      <div id={`counter-${this.state.number}`}>
         <h1>{this.state.name}</h1>
         {this.state.number === 4? null:<ChildCounter count={this.state.number}/>}
         <p>{this.state.number}</p>

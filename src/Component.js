@@ -1,4 +1,4 @@
-import { createDOM, compareTwoVdom } from "./react-dom";
+import { createDOM, compareTwoVdom, findDOM } from "./react-dom";
 
 export let updateQueue = {
     isBatchingUpdate:false, //当前是否处于批量更新模式，默认值是false
@@ -94,8 +94,11 @@ class Component{
             this.componentWillUpdate()
         }
         let newRenderVdom = this.render() //重新调用render方法 
+        let oldRenderVdom=this.oldRenderVdom;//div#counter
+        let oldDOM = findDOM(oldRenderVdom);//div#counter
         // 深度比较新旧两个虚拟Dom
-        let currentRenderVdom = compareTwoVdom(this.oldRenderVdom.dom.parentNode, this.oldRenderVdom, newRenderVdom)
+        debugger
+        let currentRenderVdom = compareTwoVdom(oldDOM.parentNode, oldRenderVdom, newRenderVdom)
         
         this.oldRenderVdom = currentRenderVdom
         

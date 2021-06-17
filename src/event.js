@@ -40,6 +40,7 @@ function dispatchEvent(event) {
     for (const key in syntheticEvent) {
         syntheticEvent[key] = null
     }
+    updateQueue.isBatchingUpdate = false
     updateQueue.batchUpdate();
 }
 

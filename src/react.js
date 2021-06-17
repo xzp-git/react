@@ -10,8 +10,8 @@ children 儿子或儿子们
 
 function createElement(type, config, children) {
     if (config) {
-        delete config.__source;
-        delete config.__self
+        delete config._source;
+        delete config._self
     }
     let props = {...config}
 
