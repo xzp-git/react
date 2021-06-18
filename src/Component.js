@@ -97,7 +97,6 @@ class Component{
         let oldRenderVdom=this.oldRenderVdom;//div#counter
         let oldDOM = findDOM(oldRenderVdom);//div#counter
         // 深度比较新旧两个虚拟Dom
-        debugger
         let currentRenderVdom = compareTwoVdom(oldDOM.parentNode, oldRenderVdom, newRenderVdom)
         
         this.oldRenderVdom = currentRenderVdom

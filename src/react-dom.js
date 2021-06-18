@@ -14,6 +14,7 @@ container 要把虚拟DOM转换真实DOM并插入到那个容器中
 
 
 function render(vdom, container) {
+    console.log(Object.isExtensible(vdom))
     // console.log(Deep(vdom));
     const dom = createDOM(vdom)
 
@@ -69,7 +70,6 @@ export function createDOM(vdom) {
     //     dom
     // }
     vdom.dom =dom
-    console.log(vdom);
     return dom
 }
 
@@ -115,17 +115,12 @@ function updateProps(dom,oldProps,newProps) {
 3.把返回的虚拟DOM转成真实DOM进行挂载
 */
 function mountClassComponent(vdom) {
-    console.log(vdom);
     // 解构类的定义和类的属性对象
     let {type, props} = vdom
     // 创建类的实例
     let classInstance = new type(props)
     //让这个类组件的虚拟DOM的classInstance属性指向这个类组件的实例
     vdom.classInstance=classInstance
-    // vdom = {
-    //     ...vdom,
-    //     classInstance:classInstance
-    // }
     Object.assign(vdom,{classInstance})
     if (classInstance.componentWillMount) {
         classInstance.componentWillMount()
@@ -138,10 +133,7 @@ function mountClassComponent(vdom) {
     vdom.oldRenderVdom = oldRenderVdom
     // 根据虚拟dom对象创建真实dom对象
     let dom = createDOM(oldRenderVdom)
-    // vdom = {
-    //     ...vdom,
-    //     oldRenderVdom:oldRenderVdom
-    // }
+
     classInstance.oldRenderVdom = oldRenderVdom 
     if (classInstance.componentDidMount) {
        dom.componentDidMount = classInstance.componentDidMount.bind(classInstance)
