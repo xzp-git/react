@@ -26,7 +26,8 @@ class Updater{
         
     }
     //一个组件不管是属性变了 还是状态变了都会更新
-    emitUpdate(newProps){
+    emitUpdate(nextProps){
+        this.newProps = nextProps
         if (updateQueue.isBatchingUpdate) { //如果当前是批量更新模式，先缓存
             updateQueue.updaters.add(this) //本次setState调用结束
 
@@ -35,15 +36,15 @@ class Updater{
         }
     }
     updateComponent(){
-        let {classInstance, pendingStates, cbs} = this
+        let {classInstance, pendingStates, cbs, newProps} = this
         //如果有等待更新的状态
-        if (pendingStates.length > 0) {
+        if ( newProps  || pendingStates.length > 0) {
             /* classInstance.state = this.getState() //计算新状态
             classInstance.forceUpdate()
             cbs.forEach(cb => cb && cb());
             cbs.length = 0 */
 
-            shouldUpdate(classInstance, this.getState())
+            shouldUpdate(classInstance,newProps ,this.getState())
             cbs.forEach(cb => cb && cb());
             cbs.length = 0 
         }
@@ -62,7 +63,10 @@ class Updater{
         return state
     }
 }
-function shouldUpdate(classInstance, nextState) {
+function shouldUpdate(classInstance, nextProps, nextState) {
+    if (nextProps) {
+        classInstance.props = nextProps
+    }
     classInstance.state = nextState  //不管组件要不要更新，其实组件的state一定会更新
     if (classInstance.shouldComponentUpdate && !classInstance.shouldComponentUpdate(classInstance.props, classInstance.state)) {
         return
@@ -97,9 +101,9 @@ class Component{
         let oldRenderVdom=this.oldRenderVdom;//div#counter
         let oldDOM = findDOM(oldRenderVdom);//div#counter
         // 深度比较新旧两个虚拟Dom
-        let currentRenderVdom = compareTwoVdom(oldDOM.parentNode, oldRenderVdom, newRenderVdom)
+         compareTwoVdom(oldDOM.parentNode, oldRenderVdom, newRenderVdom)
         
-        this.oldRenderVdom = currentRenderVdom
+        this.oldRenderVdom = newRenderVdom
         
         // updateClassComponent(this,newVdom)
         if (this.componentDidUpdate) {

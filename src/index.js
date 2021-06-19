@@ -17,7 +17,6 @@ class Counter extends React.Component{
     console.log('Counter 3.componentDidMount 组件挂载完成');
   }
   handleClick = () => {
-
    // 肯定是批量更新，而且这个回调函数石凳全部更新完毕后才执行的
     this.setState({number:this.state.number+1},() => {
       console.log("状态的回调函数")
@@ -38,10 +37,10 @@ class Counter extends React.Component{
     console.log('Counter  render 渲染完成');
     return(
       <div id={`counter-${this.state.number}`}>
-        <h1>{this.state.name}</h1>
         {this.state.number === 4? null:<ChildCounter count={this.state.number}/>}
         <p>{this.state.number}</p>
         <button onClick={this.handleClick}>+</button>
+        <FunctionCounter count={this.state.number}></FunctionCounter>
       </div>
     )
   }
@@ -77,6 +76,7 @@ class ChildCounter extends React.Component{
   }
 }
 
+let FunctionCounter = (props) => <div id="counter-function">{props.count}</div>
 ReactDom.render(
 <Counter />
 , 
