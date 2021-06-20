@@ -46,12 +46,12 @@ class Updater{
             cbs.forEach(cb => cb && cb());
             cbs.length = 0 */
 
-            shouldUpdate(classInstance,newProps ,this.getState())
+            shouldUpdate(classInstance,newProps ,this.getState(newProps))
             cbs.forEach(cb => cb && cb());
             cbs.length = 0 
         }
     }
-    getState(){
+    getState(nextProps){
         let {classInstance, pendingStates} = this
         let {state} = classInstance
         pendingStates.forEach((nextState) => {
@@ -61,6 +61,12 @@ class Updater{
             state = {...state, ...nextState}
         })
         pendingStates.length = 0
+        if (classInstance.constructor.getDerivedStateFromProps) {
+            let partialState = classInstance.constructor.getDerivedStateFromProps(nextProps,classInstance.state)
+            if (partialState) {
+                state = {...state,...partialState}
+            }
+        }
         
         return state
     }
@@ -78,10 +84,11 @@ function shouldUpdate(classInstance, nextProps, nextState) {
     if (nextProps) {
         classInstance.props = nextProps
     }
+    
     classInstance.state = nextState  //不管组件要不要更新，其实组件的state一定会更新
  
     if (willUpdate) {
-        classInstance.forceUpdate()
+        classInstance.updateComponent()
     }
     
 
@@ -104,8 +111,21 @@ class Component{
     render(){
         throw new Error('此方法为抽象方法')
     }
-        
+        //一般来说组件的属性和状态变化了才会更新组件
+        // 如果属性和状态没变,我们也想更新怎么办呢 就可以调用forceUpdate 强行更新
     forceUpdate(){
+        let nextState = this.state
+        let nextProps = this.props
+        if (this.constructor.getDerivedStateFromProps) {
+            let partialState = this.constructor.getDerivedStateFromProps(nextProps,nextState)
+            if (partialState) {
+                nextState = {...nextState,...partialState}
+            }
+        }
+        this.state = nextState
+        this.updateComponent()
+    }
+    updateComponent (){
         
         let newRenderVdom = this.render() //重新调用render方法 
         let oldRenderVdom=this.oldRenderVdom;//div#counter

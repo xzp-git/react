@@ -114,10 +114,17 @@ function mountClassComponent(vdom) {
     let {type, props} = vdom
     // 创建类的实例
     let classInstance = new type(props)
+    // classInstance.ownVdom = vdom
     //让这个类组件的虚拟DOM的classInstance属性指向这个类组件的实例
     vdom.classInstance=classInstance
     if (classInstance.componentWillMount) {
         classInstance.componentWillMount()
+    }
+    if (type.getDerivedStateFromProps) {
+        let partialState = type.getDerivedStateFromProps(classInstance.props, classInstance.state)
+        if (partialState) {
+            classInstance.state = {...classInstance.state, ...partialState}
+        }
     }
     // 调用实例的render方法返回要渲染的虚拟dom对象
     let oldRenderVdom = classInstance.render()
@@ -185,7 +192,6 @@ function updateElment(oldVdom,newVdom) {
         updateChildren(currentDOM,oldVdom.props.children,newVdom.props.children)
     }else if( typeof oldVdom.type === 'function' ){
         if (oldVdom.type.isReactComponent) {
-            
             updateClassComponent(oldVdom,newVdom)
         }else{
             updateFunctionComponent(oldVdom,newVdom)

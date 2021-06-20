@@ -25,7 +25,8 @@ class Counter extends React.Component{
   }
   shouldComponentUpdate(nextProps,nextState){
     console.log('Counter 5.shouldComponentUpdate 询问组件是否要更新', this.state ,nextState);
-    return nextState.number%2 === 0
+    // return nextState.number%2 === 0
+    return true
   }
   componentWillUpdate(){
     console.log('Counter 6.componentWillUpdate 组件将要更新', this.state);
@@ -37,7 +38,7 @@ class Counter extends React.Component{
     console.log('Counter  render 渲染完成');
     return(
       <div id={`counter-${this.state.number}`}>
-        {this.state.number === 4? null:<ChildCounter count={this.state.number}/>}
+        <ChildCounter count={this.state.number}/>
         <p>{this.state.number}</p>
         <button onClick={this.handleClick}>+</button>
        
@@ -49,35 +50,38 @@ class Counter extends React.Component{
 class ChildCounter extends React.Component{
   
 
-  componentWillMount(){
-    console.log('Counter 1.componentWillMount 组件将要挂载');
+  constructor(props){
+    super(props)
+    this.state = {number:0}
+    this.client = 0
   }
-  componentDidMount(){
-    console.log('Counter 2.componentDidMount 组件挂载完成');
+  // 从组件的新属性中映射出一个状态    componentWillReceiveProps
+  static getDerivedStateFromProps(nextProps,prevState){
+    const {count} = nextProps
+     if (count === 0) {
+      return {number:10}
+    }else if (count %2 === 0) {
+      return {number:count*2}
+    }else if (count %3 === 0) {
+      return {number:count*3}
+    }
+    return null
   }
-  componentWillReceiveProps(newProps){
-    console.log('Counter 4.componentWillReceiveProps 组件将要接受新的属性');
-  }
-  shouldComponentUpdate(nextProps,nextState){
-    console.log('Counter 5.shouldComponentUpdate 询问组件是否要更新');
-    return nextProps.count%3 === 0
-  } 
-  componentWillUpdate(){
-    console.log('Counter 6.componentWillUpdate 组件将要更新');
-  }
-  componentDidUpdate(){
-    console.log('Counter 7.componentDidUpdate 组件更新完成');
-  }
-  componentWillUnmount(){
-    console.log('Counter 8.componentWillUnMount 组件将要卸载');
-  }
+  // componentDidMount(){
+  //   window.addEventListener('mousemove',(e) => {
+  //     this.client = e.clientX
+  //     this.forceUpdate()
+  //   })
+  // }
   render(){
-    console.log('ChildCounter 3.render');
-    return (<div id="child-counter">{this.props.count}</div>)
+    return (<div id="child-counter">
+            <p>clientX:{this.client}</p>
+            {this.state.number}
+            </div>)
   }
 }
 
-let FunctionCounter = (props) => <div id="counter-function">{props.count}</div>
+// let FunctionCounter = (props) => <div id="counter-function">{props.count}</div>
 ReactDom.render(
 <Counter />
 , 
