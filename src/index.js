@@ -24,14 +24,14 @@ class Counter extends React.Component{
 
   }
   shouldComponentUpdate(nextProps,nextState){
-    console.log('Counter 5.shouldComponentUpdate 询问组件是否要更新');
+    console.log('Counter 5.shouldComponentUpdate 询问组件是否要更新', this.state ,nextState);
     return nextState.number%2 === 0
   }
   componentWillUpdate(){
-    console.log('Counter 6.componentWillUpdate 组件将要更新');
+    console.log('Counter 6.componentWillUpdate 组件将要更新', this.state);
   }
   componentDidUpdate(){
-    console.log('Counter 7.componentDidUpdate 组件更新完成');
+    console.log('Counter 7.componentDidUpdate 组件更新完成', this.state);
   }
   render(){
     console.log('Counter  render 渲染完成');
@@ -40,11 +40,12 @@ class Counter extends React.Component{
         {this.state.number === 4? null:<ChildCounter count={this.state.number}/>}
         <p>{this.state.number}</p>
         <button onClick={this.handleClick}>+</button>
-        <FunctionCounter count={this.state.number}></FunctionCounter>
+       
       </div>
     )
   }
 }
+//  <FunctionCounter count={this.state.number}></FunctionCounter>
 class ChildCounter extends React.Component{
   
 

@@ -147,7 +147,9 @@ export function compareTwoVdom(parentDom,oldVdom,newVdom,nextDOM) {
         if (currentDOM) {
             parentDom.removeChild(currentDOM )
         }
-         
+        if (oldVdom.classInstance && oldVdom.classInstance.componentWillUnmount) {
+            oldVdom.classInstance.componentWillUnmount()
+        }
         
 
     // 如果老的是个null 新的有值 新建dom节点并且插入

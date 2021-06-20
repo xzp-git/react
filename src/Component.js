@@ -2,12 +2,14 @@ import { createDOM, compareTwoVdom, findDOM } from "./react-dom";
 
 export let updateQueue = {
     isBatchingUpdate:false, //当前是否处于批量更新模式，默认值是false
-    updaters:new Set(),
+    updaters:[],
     batchUpdate(){
         for (const updater of this.updaters) {
             updater.updateComponent()  
         }
+        
         this.isBatchingUpdate = false
+        this.updaters.length = 0
     }
 }
 
@@ -29,7 +31,7 @@ class Updater{
     emitUpdate(nextProps){
         this.newProps = nextProps
         if (updateQueue.isBatchingUpdate) { //如果当前是批量更新模式，先缓存
-            updateQueue.updaters.add(this) //本次setState调用结束
+            updateQueue.updaters.push(this) //本次setState调用结束
 
         }else{
             this.updateComponent() //直接更新组件
@@ -64,14 +66,24 @@ class Updater{
     }
 }
 function shouldUpdate(classInstance, nextProps, nextState) {
+   
+    let willUpdate = true
+    
+    if (classInstance.shouldComponentUpdate && !classInstance.shouldComponentUpdate(nextProps, nextState)) {
+        willUpdate = false
+    }
+    if (willUpdate && classInstance.componentWillUpdate) {
+        classInstance.componentWillUpdate()
+    }
     if (nextProps) {
         classInstance.props = nextProps
     }
     classInstance.state = nextState  //不管组件要不要更新，其实组件的state一定会更新
-    if (classInstance.shouldComponentUpdate && !classInstance.shouldComponentUpdate(classInstance.props, classInstance.state)) {
-        return
+ 
+    if (willUpdate) {
+        classInstance.forceUpdate()
     }
-    classInstance.forceUpdate()
+    
 
 }
 class Component{
@@ -94,9 +106,7 @@ class Component{
     }
         
     forceUpdate(){
-        if (this.componentWillUpdate) {
-            this.componentWillUpdate()
-        }
+        
         let newRenderVdom = this.render() //重新调用render方法 
         let oldRenderVdom=this.oldRenderVdom;//div#counter
         let oldDOM = findDOM(oldRenderVdom);//div#counter
