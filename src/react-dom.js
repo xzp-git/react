@@ -31,7 +31,7 @@ function render(newVdom,parentDom,nextDOM) {
 }  
 
 export function createDOM(vdom) {
-    let {type, props} = vdom;
+    let {type, props, ref} = vdom;
 
     let dom;
 
@@ -65,6 +65,9 @@ export function createDOM(vdom) {
     //     dom
     // }
     vdom.dom =dom
+    if (ref) {
+        ref.current = dom
+    }
     return dom
 }
 

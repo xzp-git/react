@@ -130,6 +130,8 @@ class Component{
         let newRenderVdom = this.render() //重新调用render方法 
         let oldRenderVdom=this.oldRenderVdom;//div#counter
         let oldDOM = findDOM(oldRenderVdom);//div#counter
+
+        let extraArgs = this.getSnapshotBeforeUpdate && this.getSnapshotBeforeUpdate()
         // 深度比较新旧两个虚拟Dom
          compareTwoVdom(oldDOM.parentNode, oldRenderVdom, newRenderVdom)
         
@@ -137,7 +139,7 @@ class Component{
         
         // updateClassComponent(this,newVdom)
         if (this.componentDidUpdate) {
-            this.componentDidUpdate()
+            this.componentDidUpdate(this.props, this.state, extraArgs)
         }
     }
 }

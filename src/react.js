@@ -12,9 +12,15 @@ children 儿子或儿子们
 
 
 function createElement(type, config, children) {
+    let ref;
+    let key
     if (config) {
-        delete config._source;
+        delete config._source
         delete config._self
+        ref = config.ref
+        delete config.ref
+        key = config.key
+        delete config.key
     }
     let props = {...config}
 
@@ -31,14 +37,20 @@ function createElement(type, config, children) {
    
     return {
         type,
-        props
+        props,
+        ref,
+        key
     }
 }
 
+function createRef() {
+    return {current:null}
+} 
 
 const React = {
     createElement,
-    Component
+    Component,
+    createRef
 }
 
 export default React
