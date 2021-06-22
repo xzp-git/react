@@ -18,6 +18,9 @@ class Person extends React.Component{
    )
  }
 }
+
+
+
 class Head extends React.Component{
 
   static contextType = ColorContext
@@ -58,21 +61,36 @@ class Head extends React.Component{
     )
   }
  }
+ function Arm(props) {
+  
+  return (
+    <ColorContext.Consumer>
+      {
+        contextValue => (
+          <div style={{color:contextValue.color,border:`5px solid ${contextValue.color}`,padding:'5px'}}>
+            Arm
+            <button onClick={() => contextValue.changeColor('red')} >变红</button>
+            <button onClick={() => contextValue.changeColor('green')} >变绿</button>
+          </div>
+        )
+      }
+    </ColorContext.Consumer>
+  )
+}
+//  class Arm extends React.Component{
 
- class Arm extends React.Component{
 
-
-  static contextType = ColorContext
-  render(){
-    return(
-      <div style={{color:this.context.color,border:`5px solid ${this.context.color}`,padding:'5px'}}>
-       Arm
-       <button onClick={() => this.context.changeColor('red')} >变红</button>
-       <button onClick={() => this.context.changeColor('green')} >变绿</button>
-      </div>
-    )
-  }
- }
+//   static contextType = ColorContext
+//   render(){
+//     return(
+//       <div style={{color:this.context.color,border:`5px solid ${this.context.color}`,padding:'5px'}}>
+//        Arm
+//        <button onClick={() => this.context.changeColor('red')} >变红</button>
+//        <button onClick={() => this.context.changeColor('green')} >变绿</button>
+//       </div>
+//     )
+//   }
+//  }
 
 ReactDom.render(
 <Person />

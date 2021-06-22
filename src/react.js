@@ -59,13 +59,13 @@ function createContext() {
         return props.children
     }
 
-    // function Consumer(params) {
-        
-    // }
+    function Consumer(props) {
+        return props.children( Provider._value)
+    }
 
     return {
         Provider,
-        // Consumer
+        Consumer
     }
 }
 
