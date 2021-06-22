@@ -49,8 +49,12 @@ function createRef() {
 
 function createContext() {
     function Provider(props) {
-        Provider._value = props.value
         
+        if (Provider._value) {
+            Object.assign( Provider._value, props.value)
+        }else{
+            Provider._value = props.value
+        }
 
         return props.children
     }
