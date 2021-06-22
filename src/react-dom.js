@@ -117,6 +117,10 @@ function mountClassComponent(vdom) {
     let {type, props} = vdom
     // 创建类的实例
     let classInstance = new type(props)
+
+    if (type.contextType) {
+        classInstance.context = type.contextType.Provider._value
+    }
     // classInstance.ownVdom = vdom
     //让这个类组件的虚拟DOM的classInstance属性指向这个类组件的实例
     vdom.classInstance=classInstance

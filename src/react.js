@@ -47,10 +47,29 @@ function createRef() {
     return {current:null}
 } 
 
+function createContext() {
+    function Provider(props) {
+        Provider._value = props.value
+        
+
+        return props.children
+    }
+
+    // function Consumer(params) {
+        
+    // }
+
+    return {
+        Provider,
+        // Consumer
+    }
+}
+
 const React = {
     createElement,
     Component,
-    createRef
+    createRef,
+    createContext
 }
 
 export default React

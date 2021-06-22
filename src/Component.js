@@ -86,7 +86,9 @@ function shouldUpdate(classInstance, nextProps, nextState) {
     }
     
     classInstance.state = nextState  //不管组件要不要更新，其实组件的state一定会更新
- 
+    if (classInstance.constructor.contextType) {
+        classInstance.context = classInstance.constructor.contextType.Provider._value
+    }
     if (willUpdate) {
         classInstance.updateComponent()
     }
@@ -123,6 +125,9 @@ class Component{
             }
         }
         this.state = nextState
+        if (this.constructor.contextType) {
+            this.context = this.constructor.contextType.Provider._value
+        }
         this.updateComponent()
     }
     updateComponent (){
