@@ -18,10 +18,10 @@
     "react-app-rewired": "^2.1.8"
   },
   "scripts": {
-    "start": "set  DISABLE_NEW_JSX_TRANSFORM=true&&react-scripts start",
-    "build": "set  DISABLE_NEW_JSX_TRANSFORM=true&react-scripts build --mode=development",
-    "test": "set  DISABLE_NEW_JSX_TRANSFORM=true&react-scripts test",
-    "eject": "set  DISABLE_NEW_JSX_TRANSFORM=true&react-scripts eject"
+    "start": "set  DISABLE_NEW_JSX_TRANSFORM=true&&react-app-rewired start",
+    "build": "set  DISABLE_NEW_JSX_TRANSFORM=true&react-app-rewired build --mode=development",
+    "test": "set  DISABLE_NEW_JSX_TRANSFORM=true&react-app-rewired test",
+    "eject": "set  DISABLE_NEW_JSX_TRANSFORM=true&react-app-rewired eject"
   },
   "eslintConfig": {
     "extends": [

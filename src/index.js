@@ -1,99 +1,43 @@
-import React from "./react";
-import ReactDom from "./react-dom";
-let ColorContext = React.createContext() //{Provider,Consumer}
-class Person extends React.Component{
- state = {color:'red'}
- changeColor =(color) => this.setState({color})
+import React from "react";
+import ReactDom from "react-dom";
+/* 
+高阶组件 有三大应用场景
 
- render(){
-   let contextValue = {color:this.state.color, changeColor:this.changeColor}
-   return(
-    <ColorContext.Provider value={contextValue}>
-     <div style={{width:'200px',color:this.state.color,border:`5px solid ${this.state.color}`,padding:'5px'}}>
-      Person
-       <Head />
-       <Body />
-     </div>
-    </ColorContext.Provider>
-   )
- }
+1.属性代理
+
+
+*/
+let withLoading = loadingMessage => OldComponent => {
+  return class NewComponent extends React.Component{
+    show = () => {
+      let div = document.createElement('div')
+      div.innerHTML = `<p id='loading' style="position:absolute;top:50%;left:50%;z-index:10;background-color:gray">${loadingMessage}</p>`
+      document.body.appendChild(div)
+    }
+    hide = () => {
+      document.getElementById('loading').remove()
+    }
+    render(){
+      let extraProps = {show:this.show,hide:this.hide}
+      return <OldComponent {...this.props} {...extraProps} />
+    }
+  }
 }
-
-
-
-class Head extends React.Component{
-
-  static contextType = ColorContext
-
+@withLoading('加载中...')
+class Hello extends React.Component{
+ 
   render(){
     return(
-      <div style={{color:this.context.color,border:`5px solid ${this.context.color}`,padding:'5px'}}>
-       Head
-        <Eye />
+      <div>
+        <p>hello</p>
+        <button onClick={this.props.show} >显示</button>
+        <button onClick={this.props.hide} >隐藏</button>
       </div>
     )
   }
- }
-
- class Body extends React.Component{
-
-  static contextType = ColorContext
-
-  render(){
-    return(
-      <div style={{color:this.context.color,border:`5px solid ${this.context.color}`,padding:'5px'}}>
-       Body
-        <Arm />
-      </div>
-    )
-  }
- }
- class Eye extends React.Component{
-
-
-  static contextType = ColorContext
-  render(){
-    return(
-      <div style={{color:this.context.color,border:`5px solid ${this.context.color}`,padding:'5px'}}>
-       Eye
-       
-      </div>
-    )
-  }
- }
- function Arm(props) {
-  
-  return (
-    <ColorContext.Consumer>
-      {
-        contextValue => (
-          <div style={{color:contextValue.color,border:`5px solid ${contextValue.color}`,padding:'5px'}}>
-            Arm
-            <button onClick={() => contextValue.changeColor('red')} >变红</button>
-            <button onClick={() => contextValue.changeColor('green')} >变绿</button>
-          </div>
-        )
-      }
-    </ColorContext.Consumer>
-  )
 }
-//  class Arm extends React.Component{
-
-
-//   static contextType = ColorContext
-//   render(){
-//     return(
-//       <div style={{color:this.context.color,border:`5px solid ${this.context.color}`,padding:'5px'}}>
-//        Arm
-//        <button onClick={() => this.context.changeColor('red')} >变红</button>
-//        <button onClick={() => this.context.changeColor('green')} >变绿</button>
-//       </div>
-//     )
-//   }
-//  }
-
 ReactDom.render(
-<Person />
+<Hello />
 , 
  document.getElementById('root')) 
 
