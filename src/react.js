@@ -68,12 +68,32 @@ function createContext() {
         Consumer
     }
 }
-
+function cloneElement(oldElement, newProps, ...newChildren) {
+    let children = oldElement.props.children
+    if (children) {
+        if (!Array.isArray(children)) {
+            children = [children]
+        }
+    }else{
+        children = []
+    }
+    children.push(...newChildren)
+    children = children.map(wrapToVdom)
+    if (children.length === 0) {
+        children = undefined
+    }else if (children.length === 1) {
+        children = children[0]
+    }
+    newProps.children = children
+    let props = {...oldElement.props,...newProps}
+    return {...oldElement,props}
+}
 const React = {
     createElement,
     Component,
     createRef,
-    createContext
+    createContext,
+    cloneElement
 }
 
 export default React

@@ -1,43 +1,53 @@
-import React from "react";
-import ReactDom from "react-dom";
+import React from "./react";
+import ReactDom from "./react-dom";
 /* 
 高阶组件 有三大应用场景
 
-1.属性代理
+1.反向继承
 
 
 */
-let withLoading = loadingMessage => OldComponent => {
-  return class NewComponent extends React.Component{
-    show = () => {
-      let div = document.createElement('div')
-      div.innerHTML = `<p id='loading' style="position:absolute;top:50%;left:50%;z-index:10;background-color:gray">${loadingMessage}</p>`
-      document.body.appendChild(div)
-    }
-    hide = () => {
-      document.getElementById('loading').remove()
-    }
-    render(){
-      let extraProps = {show:this.show,hide:this.hide}
-      return <OldComponent {...this.props} {...extraProps} />
-    }
-  }
+
+class Button extends React.Component{
+ state = {name:'张三'}
+ componentWilMount(){
+  console.log('Button componentWilMount');
 }
-@withLoading('加载中...')
-class Hello extends React.Component{
- 
+ componentDidMount(){
+   console.log('Button componentDidMount');
+ }
   render(){
+    console.log('Button render');
     return(
-      <div>
-        <p>hello</p>
-        <button onClick={this.props.show} >显示</button>
-        <button onClick={this.props.hide} >隐藏</button>
-      </div>
+      <button name={this.state.name} title={this.props.title}></button>
     )
   }
 }
+const wrap = Button => {
+  return class wrapButto extends Button{
+    state = {number:0}
+    componentWilMount(){
+      console.log('Button componentWilMount');
+      super.componentWilMount()
+    }
+     componentDidMount(){
+       console.log('Button componentDidMount');
+       super.componentDidMount()
+     }
+     add = () => {
+       this.setState({number:this.state.number+1})
+     }
+    render(){
+      console.log('wrapButto render')
+      let superRenderElement = super.render()
+      let renderElement = React.cloneElement(superRenderElement,{onClick:this.add},this.state.number)
+      return renderElement
+    }
+  }
+}
+let WrapButton = wrap(Button)
 ReactDom.render(
-<Hello />
+<WrapButton title="标题" />
 , 
  document.getElementById('root')) 
 
