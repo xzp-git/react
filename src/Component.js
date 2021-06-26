@@ -95,7 +95,7 @@ function shouldUpdate(classInstance, nextProps, nextState) {
     
 
 }
-class Component{
+export class Component{
 
     static isReactComponent = true
 
@@ -156,5 +156,33 @@ class Component{
 //     classInstance.dom = newDom
 // }
 
+export class PureComponent extends Component{
+    // 重写了此方法 只有状态 属性变化了才会进行更新 佛则 不更新
+    shouldComponentUpdate(nextProps,nextState){
+        return !shallowEqual(this.props,nextProps) || !shallowEqual(this.state,nextState)
+    }
+}
+function shallowEqual(obj1,obj2) {
+    if (obj1 === obj2) {//如果引用地址一样，就相等 不关心属性变没变
+        return true
+    }
+    // 任何一方是对象或者 不是null也不相等 null  null
+    if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
+        return false   
+    }
 
-export default Component
+    let keys1 = Object.keys(obj1)
+    let keys2 = Object.keys(obj2)
+    if (keys1.length !== keys2.length) {
+        return false
+    }
+
+    for (const key of keys1) {
+        if (!obj2.hasOwnProperty(key) || obj1[key] !== obj2[key]) {
+            return false
+        }
+    }
+    return true
+}
+
+

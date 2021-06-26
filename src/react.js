@@ -1,4 +1,4 @@
-import Component from "./Component";
+import {Component,PureComponent} from "./Component";
 
 
 import {wrapToVdom} from "./utils"
@@ -15,8 +15,8 @@ function createElement(type, config, children) {
     let ref;
     let key
     if (config) {
-        delete config._source
-        delete config._self
+        delete config.__source
+        delete config.__self
         ref = config.ref
         delete config.ref
         key = config.key
@@ -91,9 +91,11 @@ function cloneElement(oldElement, newProps, ...newChildren) {
 const React = {
     createElement,
     Component,
+    PureComponent,
     createRef,
     createContext,
-    cloneElement
+    cloneElement,
+    
 }
 
 export default React
