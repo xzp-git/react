@@ -1,5 +1,5 @@
 import {Component,PureComponent} from "./Component";
-import { useState } from "./react-dom";
+import { useState, useMemo, useCallback, useReducer } from "./react-dom";
 
 import {wrapToVdom} from "./utils"
 /* 
@@ -88,6 +88,16 @@ function cloneElement(oldElement, newProps, ...newChildren) {
     let props = {...oldElement.props,...newProps}
     return {...oldElement,props}
 }
+// 返回的组件要有一个功能,属性变了重新渲染,不变,不更新
+function memo(FunctionComponent) {
+    
+
+    return class extends PureComponent{
+        render(){
+            return FunctionComponent(this.props)
+        }
+    }
+}
 const React = {
     createElement,
     Component,
@@ -95,7 +105,11 @@ const React = {
     createRef,
     createContext,
     cloneElement,
-    useState
+    useState,
+    memo,
+    useCallback,
+    useMemo,
+    useReducer
 }
 
 export default React

@@ -300,6 +300,56 @@ export function useState(initialState) {
     return [hookStates[hookIndex++],setState]
 }
 
+export function useMemo(factory,deps) {
+    if (hookStates[hookIndex]) {
+        let [lastMemo,lastDeps] = hookStates[hookIndex]
+        let same = deps.every((item,index) => item===lastDeps[index])
+        if (same) {
+            hookIndex++;
+            return lastMemo
+        }else{
+            let newMemo = factory()
+            hookStates[hookIndex++] = [newMemo,deps]
+            return newMemo
+        }
+    }else{
+        let newMemo = factory()
+        hookStates[hookIndex++] = [newMemo,deps]
+        return newMemo
+    }
+}
+
+export function useCallback(callback,deps) {
+    if (hookStates[hookIndex]) {
+        let [lastCallback,lastDeps] = hookStates[hookIndex]
+        let same = deps.every((item,index) => item===lastDeps[index])
+        if (same) {
+            hookIndex++;
+            return lastCallback
+        }else{
+            hookStates[hookIndex++] = [callback,deps]
+            return callback
+        }
+    }else{
+        hookStates[hookIndex++] = [callback,deps]
+        return callback
+    }
+}
+
+export function useReducer(reducer, initialState) {
+    // 把老的值取出来 如果没有 就用默认值
+    hookStates[hookIndex] =  hookStates[hookIndex] || (typeof initialState === 'function'?initialState() : initialState)
+
+    let currentIndex = hookIndex
+    function dispatch(action) {
+        
+        hookStates[currentIndex] = reducer(hookStates[currentIndex],action)
+        scheduleUpdate() //当状态变化要重新更新应用
+    }
+
+    return [hookStates[hookIndex++],dispatch]
+}
+
 const ReactDom = {
     render
 }
