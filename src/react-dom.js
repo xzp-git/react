@@ -1,5 +1,12 @@
 import { addEvent } from "./event";
 import { REACT_TEXT } from "./constants";
+
+// 这是一个数组里面存放了我么所有的状态
+let hookStates = []
+// hook索引表示当前的hook
+let hookIndex = 0
+let scheduleUpdate
+
 /* 
 1.把vdom 变成真实的Dom
 2.把虚拟dom的属性更新到Dom上
@@ -15,6 +22,28 @@ container 要把虚拟DOM转换真实DOM并插入到那个容器中
 
 
 function render(newVdom,parentDom,nextDOM) {
+    // if (newVdom) {
+    //    // debugger
+    //     // console.log(Deep(vdom));
+    //     let newDOM = createDOM(newVdom)
+    //     if (nextDOM) {
+    //         parentDom.insertBefore(newDOM,nextDOM)
+    //     }else{
+    //         parentDom.appendChild(newDOM)
+    //     }
+    
+    // }
+
+    mount(newVdom,parentDom,nextDOM)
+    scheduleUpdate = () => {
+        hookIndex = 0;//在状态修改后 调试更新的时候 索引重置为0
+        compareTwoVdom(parentDom,newVdom,newVdom)
+    }
+    
+    // dom.componentDidMount && dom.componentDidMount()
+}  
+
+function mount(newVdom,parentDom,nextDOM) {
     if (newVdom) {
        // debugger
         // console.log(Deep(vdom));
@@ -51,7 +80,7 @@ export function createDOM(vdom) {
     // 使用虚拟dom的属性更新刚创建出来的真实dom的属性
     updateProps(dom,{},props)
      if(typeof props.children === 'object' && props.children.type) {
-        render(props.children, dom) 
+        mount(props.children, dom) 
  
         // 如果儿子是一个数组的话，说明儿子不止一个
     }else if (Array.isArray(props.children)) {
@@ -83,7 +112,7 @@ function mountFunctionComponent(vdom) {
 function reconcileChildren(childrenVdom, parentDom) {
     for (let i = 0; i < childrenVdom.length; i++) {
         let childVdom = childrenVdom[i];
-        render(childVdom,parentDom)
+        mount(childVdom,parentDom)
     }
 }
 
@@ -134,7 +163,7 @@ function mountClassComponent(vdom) {
         }
     }
     // 调用实例的render方法返回要渲染的虚拟dom对象
-    let oldRenderVdom = classInstance.render()
+    let oldRenderVdom = classInstance.mount()
     
    
     vdom.oldRenderVdom = oldRenderVdom
@@ -168,7 +197,7 @@ export function compareTwoVdom(parentDom,oldVdom,newVdom,nextDOM) {
 
     // 如果老的是个null 新的有值 新建dom节点并且插入
     }else if (!oldVdom && newVdom) {
-        render(newVdom,parentDom,nextDOM)
+        mount(newVdom,parentDom,nextDOM)
         
 
     // 老的有新的也有 但是类型不同
@@ -250,6 +279,25 @@ export function findDOM(vdom) {
         dom = vdom.dom
     }
     return dom
+}
+
+
+
+// 让函数组件可以使用状态
+export function useState(initialState) {
+    // 把老的值取出来 如果没有 就用默认值
+    hookStates[hookIndex] =  hookStates[hookIndex] || (typeof initialState === 'function'?initialState() : initialState)
+
+    let currentIndex = hookIndex
+    function setState(newState) {
+        if (typeof newState == 'function') {
+            newState = newState(hookStates[currentIndex])
+        }
+        hookStates[currentIndex] = newState
+        scheduleUpdate() //当状态变化要重新更新应用
+    }
+
+    return [hookStates[hookIndex++],setState]
 }
 
 const ReactDom = {

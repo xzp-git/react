@@ -1,5 +1,5 @@
 import {Component,PureComponent} from "./Component";
-
+import { useState } from "./react-dom";
 
 import {wrapToVdom} from "./utils"
 /* 
@@ -95,7 +95,7 @@ const React = {
     createRef,
     createContext,
     cloneElement,
-    
+    useState
 }
 
 export default React
