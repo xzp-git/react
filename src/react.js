@@ -2,6 +2,7 @@ import {Component,PureComponent} from "./Component";
 import { useState, useMemo, useCallback, useReducer } from "./react-dom";
 
 import {wrapToVdom} from "./utils"
+
 /* 
 
 type 元素的类型
@@ -47,26 +48,20 @@ function createRef() {
     return {current:null}
 } 
 
-function createContext() {
+function createContext(initialValue) {
+    let context = {Provider, Consumer}
     function Provider(props) {
-        
-        if (Provider._value) {
-            Object.assign( Provider._value, props.value)
-        }else{
-            Provider._value = props.value
-        }
+        context._currentValue = context._currentValue || initialValue
+        Object.assign( context._currentValue, props.value)
 
         return props.children
     }
 
     function Consumer(props) {
-        return props.children( Provider._value)
+        return props.children( context._currentValue )
     }
 
-    return {
-        Provider,
-        Consumer
-    }
+    return context
 }
 function cloneElement(oldElement, newProps, ...newChildren) {
     let children = oldElement.props.children
@@ -98,6 +93,10 @@ function memo(FunctionComponent) {
         }
     }
 }
+
+function useContext(context) {
+    return context._currentValue
+}
 const React = {
     createElement,
     Component,
@@ -109,7 +108,8 @@ const React = {
     memo,
     useCallback,
     useMemo,
-    useReducer
+    useReducer,
+    useContext
 }
 
 export default React
