@@ -7,6 +7,58 @@ let hookStates = []
 let hookIndex = 0
 let scheduleUpdate
 
+
+export function useEffect(callback, dependencies) {
+     if (hookStates[hookIndex]) {
+         let [destroyFunction,lastDependencies] = hookStates[hookIndex]
+         let allTheSame = dependencies && dependencies.every((item,index) => item === lastDependencies[index])
+        if (allTheSame) {
+            hookIndex++
+        }else{
+            destroyFunction && destroyFunction()
+            setTimeout(()=>{
+                let destroyFunction = callback()
+    
+                hookStates[hookIndex++] = [destroyFunction,dependencies]
+            })
+        }
+        }else{//说明是第一次执行
+        //为了保证次回调函数不是同步执行，而是在页面渲染后执行
+        setTimeout(()=>{
+            let destroyFunction = callback()
+
+            hookStates[hookIndex++] = [destroyFunction,dependencies]
+        })
+     }
+}
+export function useLayoutEffect(callback, dependencies) {
+    if (hookStates[hookIndex]) {
+        let [destroyFunction,lastDependencies] = hookStates[hookIndex]
+        let allTheSame = dependencies && dependencies.every((item,index) => item === lastDependencies[index])
+       if (allTheSame) {
+           hookIndex++
+       }else{
+           destroyFunction && destroyFunction()
+           queueMicrotask(()=>{
+               let destroyFunction = callback()
+   
+               hookStates[hookIndex++] = [destroyFunction,dependencies]
+           })
+       }
+       }else{//说明是第一次执行
+       //为了保证次回调函数不是同步执行，而是在页面渲染后执行
+       queueMicrotask(()=>{
+           let destroyFunction = callback()
+
+           hookStates[hookIndex++] = [destroyFunction,dependencies]
+       })
+    }
+}
+
+export function useRef(initialState) {
+    hookStates[hookIndex] = hookStates[hookIndex] || {current:initialState}
+    return hookStates[hookIndex++]
+}
 /* 
 1.把vdom 变成真实的Dom
 2.把虚拟dom的属性更新到Dom上
@@ -78,14 +130,17 @@ export function createDOM(vdom) {
     }
     
     // 使用虚拟dom的属性更新刚创建出来的真实dom的属性
-    updateProps(dom,{},props)
-     if(typeof props.children === 'object' && props.children.type) {
-        mount(props.children, dom) 
- 
-        // 如果儿子是一个数组的话，说明儿子不止一个
-    }else if (Array.isArray(props.children)) {
-        reconcileChildren(props.children, dom)
+    if (props) {
+        updateProps(dom,{},props)
+        if(typeof props.children === 'object' && props.children.type) {
+            mount(props.children, dom) 
+    
+            // 如果儿子是一个数组的话，说明儿子不止一个
+        }else if (Array.isArray(props.children)) {
+            reconcileChildren(props.children, dom)
+        }
     }
+    
 
     // 把真实dom 作为一个dom属性放在虚拟dom上 为以后的更新做准备
     // debugger
@@ -285,19 +340,9 @@ export function findDOM(vdom) {
 
 // 让函数组件可以使用状态
 export function useState(initialState) {
-    // 把老的值取出来 如果没有 就用默认值
-    hookStates[hookIndex] =  hookStates[hookIndex] || (typeof initialState === 'function'?initialState() : initialState)
+    
 
-    let currentIndex = hookIndex
-    function setState(newState) {
-        if (typeof newState == 'function') {
-            newState = newState(hookStates[currentIndex])
-        }
-        hookStates[currentIndex] = newState
-        scheduleUpdate() //当状态变化要重新更新应用
-    }
-
-    return [hookStates[hookIndex++],setState]
+    return useReducer(null,initialState)
 }
 
 export function useMemo(factory,deps) {
@@ -335,7 +380,7 @@ export function useCallback(callback,deps) {
         return callback
     }
 }
-
+ 
 export function useReducer(reducer, initialState) {
     // 把老的值取出来 如果没有 就用默认值
     hookStates[hookIndex] =  hookStates[hookIndex] || (typeof initialState === 'function'?initialState() : initialState)
@@ -343,7 +388,17 @@ export function useReducer(reducer, initialState) {
     let currentIndex = hookIndex
     function dispatch(action) {
         
-        hookStates[currentIndex] = reducer(hookStates[currentIndex],action)
+        let lastState = hookStates[currentIndex]
+        let nextState
+        if (typeof action === 'function') {
+            nextState = action(lastState)
+        }
+        if (reducer) {
+            nextState = reducer(nextState,action)
+        }
+
+        
+        hookStates[currentIndex] = nextState
         scheduleUpdate() //当状态变化要重新更新应用
     }
 

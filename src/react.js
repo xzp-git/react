@@ -1,5 +1,5 @@
 import {Component,PureComponent} from "./Component";
-import { useState, useMemo, useCallback, useReducer } from "./react-dom";
+import { useState, useMemo, useCallback, useReducer,useEffect, useLayoutEffect, useRef } from "./react-dom";
 
 import {wrapToVdom} from "./utils"
 
@@ -109,7 +109,10 @@ const React = {
     useCallback,
     useMemo,
     useReducer,
-    useContext
+    useContext,
+    useEffect,
+    useRef,
+    useLayoutEffect
 }
 
 export default React

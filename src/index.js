@@ -1,29 +1,29 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-/* 
-useEffect里面的代码可以写副作用代码
-默认情况下 每次渲染完成都会执行
-如果依赖数组是空的话 函数只会执行一次
+import React from './react';
+import ReactDOM from './react-dom';
 
-依赖项发生变化了才会重新执行 如果依赖项不变化，不执行   空数组不会变
+/* 
+useLayoutEffect 在浏览器绘制之前执行
+
+useEffect  是在浏览器绘制之后执行的
+
+useRef
+
 */
-function Counter(){
-  const [number,setNumber]=React.useState(0);
-  React.useEffect(()=>{
-     console.log('开启一个定时器');
-     const $timer = setInterval(()=>{
-      setNumber(number=>number+1);
-     },1000);
-    //  useEffect执行完成后可以返回一个销毁函数
-     return () => {
-       clearInterval($timer)
-     }
-  },[]);
-  return (
-    <div>
-      <p>Counter:{number}</p>
-    </div>
-  )
+function Animation() {
+  const divRef = React.useRef()
+  React.useLayoutEffect(() => {
+    divRef.current.style.WebkitTransform='translate(500px)'
+    divRef.current.style.transition='all 1000ms'
+  })
+  let style = {
+    width:'100px',
+    height:'100px',
+    backgroundColor:'red'
+  }
+
+  return <div ref={divRef} style={style} >内容</div>
 }
-ReactDOM.render(<Counter/>,document.getElementById('root'));
+
+
+ReactDOM.render(<Animation/>,document.getElementById('root'));
  
