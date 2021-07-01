@@ -97,6 +97,19 @@ function memo(FunctionComponent) {
 function useContext(context) {
     return context._currentValue
 }
+
+function forwardRef(FunctionComponent) {
+    
+    return class extends Component{
+        render(){ 
+            return FunctionComponent(this.props, this.ref)
+        }
+    }
+}
+
+function useImperativeHandle(ref,factory) {
+    ref.current = factory()
+}
 const React = {
     createElement,
     Component,
@@ -112,7 +125,9 @@ const React = {
     useContext,
     useEffect,
     useRef,
-    useLayoutEffect
+    useLayoutEffect,
+    forwardRef,
+    useImperativeHandle
 }
 
 export default React

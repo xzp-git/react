@@ -198,10 +198,12 @@ function updateProps(dom,oldProps,newProps) {
 */
 function mountClassComponent(vdom) {
     // 解构类的定义和类的属性对象
-    let {type, props} = vdom
+    let {type, props, ref} = vdom
     // 创建类的实例
     let classInstance = new type(props)
-
+    if (ref) {
+        classInstance.ref = ref
+    }
     if (type.contextType) {
         classInstance.context = type.contextType.Provider._value
     }
@@ -218,7 +220,7 @@ function mountClassComponent(vdom) {
         }
     }
     // 调用实例的render方法返回要渲染的虚拟dom对象
-    let oldRenderVdom = classInstance.mount()
+    let oldRenderVdom = classInstance.render()
     
    
     vdom.oldRenderVdom = oldRenderVdom

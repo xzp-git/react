@@ -1,29 +1,35 @@
+// import React from 'react';
+// import ReactDOM from 'react-dom';
 import React from './react';
 import ReactDOM from './react-dom';
-
-/* 
-useLayoutEffect 在浏览器绘制之前执行
-
-useEffect  是在浏览器绘制之后执行的
-
-useRef
-
-*/
-function Animation() {
-  const divRef = React.useRef()
-  React.useLayoutEffect(() => {
-    divRef.current.style.WebkitTransform='translate(500px)'
-    divRef.current.style.transition='all 1000ms'
-  })
-  let style = {
-    width:'100px',
-    height:'100px',
-    backgroundColor:'red'
+const ForwardedChild = React.forwardRef(Child)
+function Parent(props) {
+  let [count,setCount] = React.useState(0)
+  let childRef = React.createRef()
+  let getFocus = () => {
+    childRef.current.focus()
   }
-
-  return <div ref={divRef} style={style} >内容</div>
+  return(
+    <div>
+      <ForwardedChild ref={childRef}  />
+      <button onClick={getFocus}>获取焦点</button>
+      <p>{count}</p>
+      <button onClick={() => setCount(count+1)}>+</button>
+    </div>
+  )
 }
 
+function Child(props,childRef) {
+  let inputRef = React.createRef()
+  React.useImperativeHandle(childRef,() => {
+    return {
+      focus(){
+        inputRef.current.focus()
+      }
+    }
+  })
+  return <input ref={inputRef}  />
+}
 
-ReactDOM.render(<Animation/>,document.getElementById('root'));
+ReactDOM.render(<Parent/>,document.getElementById('root'));
  
